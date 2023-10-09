@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 // import { useNavigate } from 'react-router-dom'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import appFirebase from '../credentials'
+import appFirebase, { db } from '../credentials'
+import { collection, getDoc, getDocs, query, doc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore'
 const auth = getAuth(appFirebase)
 
 interface IFormSignUp {
@@ -12,28 +13,32 @@ interface IFormSignUp {
   password: string;
 }
 
-function SignIn() {
+function SignIn () {
   //   const navigate = useNavigate()
   const [registering, setRegistering] = useState(false)
   const [text, setText] = useState(false)
+  const [formData, setFormData] = useState<IFormSignUp>({
+    fullname: '',
+    username: '',
+    email: '',
+    password: ''
+  })
   const { register, formState: { errors }, handleSubmit } = useForm<IFormSignUp>()
   const onSubmit: SubmitHandler<IFormSignUp> = data => {
-    try {
-      console.log(data)
-      if (registering) {
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-      } else {
-        try {
-          signInWithEmailAndPassword(auth, data.email, data.password)
-        } catch (error) {
-          setText('Password is not valid.')
-        }
-      }
-    } catch (e) {
-      console.log(e)
+    console.log(data)
+    if (registering) {
+      addDoc(collection(db, 'users'), { data })
+      setFormData({
+        fullname: '',
+        username: '',
+        email: '',
+        password: ''
+      })
+      // createUserWithEmailAndPassword(auth, data.email, data.password)
+    } else {
+      signInWithEmailAndPassword(auth, data.email, data.password)
     }
   }
-
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">
@@ -46,39 +51,46 @@ function SignIn() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
                 {registering
                   ? (
-              <>
-              <div className='mb-4'>
-                    <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Full Name</label>
-                    <input
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      type="text"
-                      placeholder="Full name"
-                      minLength={8}
-                      {...register('fullname',
-                        {
-                          required: 'Full name is required',
-                          pattern: {
-                            value: /^[a-zA-Z]{8,}$/,
-                            message: 'Full name is not valid'
-                          }
-                        })} />
-                  </div><p className='mt-2 text-xs text-red-600 dark:text-red-400'>
-                      {errors.fullname && (errors.fullname as any).message}
-                    </p><div>
-                      <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Username</label>
-                      <input
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        id='username'
-                        type='text'
-                        placeholder='Username'
-                        minLength={8}
-                        {...register('username',
-                          {
-                            required: 'Username is required'
-                          })} />
-                    </div><p className='mt-2 text-xs text-red-600 dark:text-red-400'>
-                      {errors.username && (errors.username as any).message}
-                    </p>
+                    <>
+                      <div className='mb-4'>
+                        <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Full Name</label>
+                        <input
+                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                          type="text"
+                          placeholder="Full name"
+                          minLength={8}
+                          {...register('fullname',
+                            {
+                              required: 'Full name is required',
+                              pattern: {
+                                value: /^[a-zA-Z]{8,}$/,
+                                message: 'Full name is not valid'
+                              }
+                            })}
+                            value={formData.fullname} // Establece el valor desde el estado
+                            onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
+                            />
+                      </div><p className='mt-2 text-xs text-red-600 dark:text-red-400'>
+                        {errors.fullname && (errors.fullname as any).message}
+                      </p><div>
+                        <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Username</label>
+                        <input
+                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                          id='username'
+                          type='text'
+                          placeholder='Username'
+                          minLength={8}
+                          {...register('username',
+                            {
+                              required: 'Username is required'
+                            })}
+                            value={formData.username} // Establece el valor desde el estado
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            />
+
+                      </div><p className='mt-2 text-xs text-red-600 dark:text-red-400'>
+                        {errors.username && (errors.username as any).message}
+                      </p>
                     </>
                     )
                   : null}
@@ -97,6 +109,8 @@ function SignIn() {
                           message: 'Email is not valid'
                         }
                       })}
+                      value={formData.email} // Establece el valor desde el estado
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
                 <p className='mt-2 text-xs text-red-600 dark:text-red-400'>
@@ -117,6 +131,8 @@ function SignIn() {
                           message: 'Password is not valid'
                         }
                       })}
+                      value={formData.password} // Establece el valor desde el estado
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>
                 <p className='mt-2 text-xs text-red-600 dark:text-red-400'>

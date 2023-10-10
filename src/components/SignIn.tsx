@@ -1,8 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-// import { useNavigate } from 'react-router-dom'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import appFirebase, { db } from '../credentials'
+import appFirebase, { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore'
 const auth = getAuth(appFirebase)
 

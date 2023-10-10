@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import appFirebase from '../src/credentials'
+import appFirebase from '@config/firebase'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import SignIn from './components/SignIn'
 import Home from './components/Home'

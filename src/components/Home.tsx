@@ -1,5 +1,5 @@
 import { getAuth, signOut } from 'firebase/auth'
-import appFirebase from '../credentials'
+import appFirebase from '@config/firebase'
 const auth = getAuth(appFirebase)
 
 function Home ({ email }) {

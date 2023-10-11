@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-// import { useNavigate } from 'react-router-dom'
 import appFirebase, { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where } from 'firebase/firestore'
+import { useNavigate } from 'react-router-dom'
 
 interface IFormSignUp {
   fullname: string;
@@ -11,10 +11,11 @@ interface IFormSignUp {
   password: string;
 }
 
-function SignIn() {
+function SignIn () {
   //   const navigate = useNavigate()
   const [registering, setRegistering] = useState(false)
-  const [text, setText] = useState(false)
+  const [text, setText] = useState('')
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<IFormSignUp>({
     fullname: '',
     username: '',
@@ -42,13 +43,26 @@ function SignIn() {
       })
     } else {
       // Log In
-      // const docRef = doc(db, 'users', userData.username)
-      // const docSnap = await getDoc(docRef)
-      // if (docSnap.exists()) {
-      //   console.log('Document data:', docSnap.data())
+      const userQuery = query(collection(db, 'users'), where('username', '==', data.username))
+      const userSnapshot = await getDocs(userQuery)
+      if (userSnapshot.empty) {
+        // user does not found
+        setText('Login failed. Invalid username or password.')
+      } else {
+        // User found, check password
+        const user = userSnapshot.docs[0].data()
+        if (user.password === (data.password)) {
+          // Successful login
+          console.log('User logged in:', user)
+          navigate('/home', { state: { fullname: user.fullname } })
+        } else {
+          // Password doesn't match
+          setText('Login failed. Invalid username or password.')
+        }
       }
     }
   }
+
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">
@@ -108,7 +122,7 @@ function SignIn() {
                       </p>
 
                     </>
-                  )
+                    )
                   : null}
                 <div>
                   <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Username</label>
@@ -151,16 +165,20 @@ function SignIn() {
                 <p className='mt-2 text-xs text-red-600 dark:text-red-400'>
                   {errors.password && (errors.password as any).message}
                 </p>
-                <div>
-                  <p>{text}</p>
-                </div>
+                {registering
+                  ? null
+                  : (
+                    <div>
+                      <p className='text-red-400'>{text}</p>
+                    </div>
+                    )}
                 <div>
                   <button
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     {registering ? 'Register' : 'Log In'}
                   </button>
-                  <h2>
-                    {registering ? 'f you already have an account  ' : 'if you don´t have an account  '}
+                  <h2 className='text-slate-50'>
+                    {registering ? 'If you already have an account  ' : 'If you don´t have an account  '}
                     <button
                       className='text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800'
                       onClick={() => setRegistering(!registering)}>{registering ? 'Log In' : 'Register'}</button>

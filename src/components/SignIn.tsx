@@ -53,8 +53,8 @@ function SignIn () {
         const user = userSnapshot.docs[0].data()
         if (user.password === (data.password)) {
           // Successful login
-          console.log('User logged in:', user)
-          navigate('/home', { state: { fullname: user.fullname } })
+          console.log('User logged in:', userSnapshot.docs[0].id)
+          navigate('/home', { state: { fullname: user.fullname, id: userSnapshot.docs[0].id }})
         } else {
           // Password doesn't match
           setText('Login failed. Invalid username or password.')

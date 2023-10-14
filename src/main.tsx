@@ -1,24 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import SignIn from './components/SignIn'
 import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { AuthProvider } from './Auth.tsx'
-import PrivateRoute from './PrivateRoute.tsx'
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <SignIn />
-  },
-  {
-    path: 'home',
-    element: <Home />
-  }
-])
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SignIn />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 )

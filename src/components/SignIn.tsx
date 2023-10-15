@@ -86,12 +86,8 @@ function SignIn () {
                           {...register('fullname',
                             {
                               required: 'Full name is required'
-                              // pattern: {
-                              //   value: /^[a-zA-Z]{8,}$/,
-                              //   message: 'Full name is not valid'
-                              // }
                             })}
-                          value={formData.fullname} // Establece el valor desde el estado
+                          value={formData.fullname}
                           onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                         />
                       </div>
@@ -113,7 +109,7 @@ function SignIn () {
                                 message: 'Email is not valid'
                               }
                             })}
-                          value={formData.email} // Establece el valor desde el estado
+                          value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                       </div>
@@ -136,7 +132,7 @@ function SignIn () {
                       {
                         required: 'Username is required'
                       })}
-                    value={formData.username} // Establece el valor desde el estado
+                    value={formData.username} 
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
 
@@ -158,7 +154,7 @@ function SignIn () {
                           message: 'Password is not valid'
                         }
                       })}
-                    value={formData.password} // Establece el valor desde el estado
+                    value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>

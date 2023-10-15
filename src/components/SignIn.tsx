@@ -85,11 +85,11 @@ function SignIn () {
                           minLength={8}
                           {...register('fullname',
                             {
-                              required: 'Full name is required',
-                              pattern: {
-                                value: /^[a-zA-Z]{8,}$/,
-                                message: 'Full name is not valid'
-                              }
+                              required: 'Full name is required'
+                              // pattern: {
+                              //   value: /^[a-zA-Z]{8,}$/,
+                              //   message: 'Full name is not valid'
+                              // }
                             })}
                           value={formData.fullname} // Establece el valor desde el estado
                           onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}

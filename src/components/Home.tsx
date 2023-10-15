@@ -6,7 +6,6 @@ import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFiresto
 function Home() {
   const navigate = useNavigate()
   const [list, setList] = useState([])
-  const [listUserFollow, setListUserFollow] = useState([])
   const [following, setFollowing] = useState(false)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
@@ -14,13 +13,12 @@ function Home() {
   const { state } = location
 
   const { fullname, id } = state
-
+  const idUser = id
   // function for to show user list
 
   useEffect(() => {
     const getList = async () => {
       try {
-        const idUser = id
         const usersRef = collection(db, 'users')
         const q = query(usersRef)
         const querySnapshot = await getDocs(q)
@@ -114,12 +112,12 @@ function Home() {
                 <p className='text-slate-50'>Followers</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/followers')}
+                  onClick={() => navigate('/followers', { state: { id: idUser } })}
                 >{followersCount}</a>
                 <p className='text-slate-50'>Following</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/following')}
+                  onClick={() => navigate('/following', { state: { id: idUser } })}
                 >{followingCount}</a>
               </div>
             </div>

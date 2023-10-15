@@ -4,8 +4,36 @@ import appFirebase, { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 function Following() {
-    const navigate = useNavigate()
-    return (
+  const location = useLocation()
+  const { state } = location
+  const [list, setList] = useState([])
+  const navigate = useNavigate()
+  const { id } = state
+  const idUser = id
+  useEffect(() => {
+    const getList = async () => {
+      try {
+        const usersRef = collection(db, 'users')
+        const q = query(usersRef, where('following', 'array-contains', id))
+        const querySnapshot = await getDocs(q)
+        const docs = []
+        querySnapshot.forEach((doc) => {
+            docs.push({ ...doc.data(), id: idUser.following.includes(doc.id) })
+          // if (idUser && idUser.following && idUser.following.includes(doc.id)) {
+          //   setFollowing(true)
+          // } else {
+          //   setFollowing(false)
+          // }
+        })
+        setList(docs)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getList()
+  }, [list])
+
+  return (
         <>
             <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
                 <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -40,14 +68,14 @@ function Following() {
                             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                                 <h1 className='dark:text-white'>Following</h1>
                                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    {/* {list.map(list => ( */}
-                                    {/* <tbody key={list.id}> */}
+                                    {list.map(list => (
+                                     <tbody key={list.id}>
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {/* {list.fullname} */}
+                                            {list.fullname}
                                         </th>
                                         <td className="px-6 py-4">
-                                            {/* @{list.username} */}
+                                            @{list.username}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <a href="/home"
@@ -58,8 +86,8 @@ function Following() {
                                             </a>
                                         </td>
                                     </tr>
-                                    {/* </tbody> */}
-                                    {/* ))} */}
+                                    </tbody>
+                                    ))}
                                 </table>
                             </div>
                         </div>
@@ -68,6 +96,6 @@ function Following() {
             </div>
 
         </>
-    )
+  )
 }
 export default Following

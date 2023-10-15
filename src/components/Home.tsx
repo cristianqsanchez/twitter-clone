@@ -4,10 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import appFirebase, { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-function Home() {
+function Home () {
   const navigate = useNavigate()
   const [list, setList] = useState([])
-  const [listUserFollowMe, setListUserFollowMe] = useState([])
+  const [listUserFollow, setListUserFollow] = useState([])
   const [following, setFollowing] = useState(false)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
@@ -40,25 +40,35 @@ function Home() {
       } catch (error) {
         console.log(error)
       }
-    }
-    getList()
-  }, [list])
-
-  useEffect(() => {
-    const getListUserFollowMe = async () => {
       try {
         const userDoc = doc(db, 'users', id)
         const userSnapshot = await getDoc(userDoc)
         const userData = userSnapshot.data()
         if (userData && userData.following) {
-          setFollowersCount(userData.following.length)
+          setFollowingCount(userData.following.length)
         }
       } catch (error) {
         console.log(error)
       }
+
+      try {
+        const usersRef = collection(db, 'users')
+        const q = query(usersRef, where('following', 'array-contains', id))
+        const querySnapshot = await getDocs(q)
+        setFollowersCount(querySnapshot.size)
+      } catch (error) {
+        console.log(error)
+      }
     }
-    getListUserFollowMe()
-  }, [id])
+    getList()
+  }, [list])
+
+  // useEffect(() => {
+  //   const getFollowersCount = async () => {
+     
+  //   }
+  //   getFollowersCount()
+  // }, [id])
   const followUser = async (userIdToFollow) => {
     const users = doc(db, 'users', id)
 

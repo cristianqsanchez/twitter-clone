@@ -53,8 +53,8 @@ function SignIn () {
         const user = userSnapshot.docs[0].data()
         if (user.password === (data.password)) {
           // Successful login
-          console.log('User logged in:', user)
-          navigate('/home', { state: { fullname: user.fullname } })
+          console.log('User logged in:', userSnapshot.docs[0].id)
+          navigate('/home', { state: { fullname: user.fullname, id: userSnapshot.docs[0].id }})
         } else {
           // Password doesn't match
           setText('Login failed. Invalid username or password.')
@@ -85,13 +85,9 @@ function SignIn () {
                           minLength={8}
                           {...register('fullname',
                             {
-                              required: 'Full name is required',
-                              pattern: {
-                                value: /^[a-zA-Z]{8,}$/,
-                                message: 'Full name is not valid'
-                              }
+                              required: 'Full name is required'
                             })}
-                          value={formData.fullname} // Establece el valor desde el estado
+                          value={formData.fullname}
                           onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                         />
                       </div>
@@ -113,7 +109,7 @@ function SignIn () {
                                 message: 'Email is not valid'
                               }
                             })}
-                          value={formData.email} // Establece el valor desde el estado
+                          value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                       </div>
@@ -136,7 +132,7 @@ function SignIn () {
                       {
                         required: 'Username is required'
                       })}
-                    value={formData.username} // Establece el valor desde el estado
+                    value={formData.username} 
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
 
@@ -158,7 +154,7 @@ function SignIn () {
                           message: 'Password is not valid'
                         }
                       })}
-                    value={formData.password} // Establece el valor desde el estado
+                    value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>

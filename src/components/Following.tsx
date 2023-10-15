@@ -13,19 +13,18 @@ function Following() {
   useEffect(() => {
     const getList = async () => {
       try {
-        const usersRef = collection(db, 'users')
-        const q = query(usersRef, where('following', 'array-contains', id))
-        const querySnapshot = await getDocs(q)
-        const docs = []
-        querySnapshot.forEach((doc) => {
-            docs.push({ ...doc.data(), id: idUser.following.includes(doc.id) })
-          // if (idUser && idUser.following && idUser.following.includes(doc.id)) {
-          //   setFollowing(true)
-          // } else {
-          //   setFollowing(false)
-          // }
-        })
-        setList(docs)
+         // Paso 1: Consulta el arreglo 'following' para el usuario autenticado
+         const userDocRef = doc(db, 'users', idUser)
+         const userDoc = await getDoc(userDocRef)
+
+         if (userDoc.exists()) {
+           const userFollowingArray = userDoc.data().following
+
+           // Establece el arreglo 'following' en el estado
+           setList(userFollowingArray || [])
+         } else {
+           console.log('Usuario no encontrado.')
+         }
       } catch (error) {
         console.log(error)
       }
@@ -68,25 +67,25 @@ function Following() {
                             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                                 <h1 className='dark:text-white'>Following</h1>
                                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    {list.map(list => (
-                                     <tbody key={list.id}>
-                                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {list.fullname}
-                                        </th>
-                                        <td className="px-6 py-4">
-                                            @{list.username}
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <a href="/home"
-                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                            // onClick={() => followUser(list.id)}
-                                            >
-                                                {/* {following ? 'Unfollow' : 'Follow'} */}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                    {list.map((userId, index)=> (
+                                        <tbody key={index}>
+                                            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                    {userId}
+                                                </th>
+                                                <td className="px-6 py-4">
+                                                    {/* @{list.username} */}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <a href="/home"
+                                                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                                    // onClick={() => followUser(list.id)}
+                                                    >
+                                                        {/* {following ? 'Unfollow' : 'Follow'} */}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     ))}
                                 </table>
                             </div>

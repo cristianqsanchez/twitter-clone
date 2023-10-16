@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import appFirebase, { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove, FieldValue } from 'firebase/firestore'
+import { db } from '@config/firebase'
+import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-function Home() {
+function Home () {
   const navigate = useNavigate()
-  const [list, setList] = useState([])
+  const [list, setList] = useState<{ id: string, fullname: string, username: string}[]>([])
   const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
@@ -54,7 +54,7 @@ function Home() {
       }
     }
     getList()
-  }, [id])
+  }, [id, idUser])
 
   const followUser = async (userIdToFollow: string) => {
     const users = doc(db, 'users', id)
@@ -101,12 +101,12 @@ function Home() {
                 <p className='text-slate-50'>Followers</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/followers', { state: { id: idUser, fullname: fullname } })}
+                  onClick={() => navigate('/followers', { state: { id: idUser, fullname } })}
                 >{followersCount}</a>
                 <p className='text-slate-50'>Following</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/following', { state: { id: idUser, fullname: fullname } })}
+                  onClick={() => navigate('/following', { state: { id: idUser, fullname } })}
                 >{followingCount}</a>
               </div>
             </div>

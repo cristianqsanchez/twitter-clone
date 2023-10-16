@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import appFirebase, { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { db } from '@config/firebase'
+import { collection, getDoc, getDocs, query, doc, where } from 'firebase/firestore'
 
-function Followers() {
+function Followers () {
   const location = useLocation()
   const { state } = location
-  const [list, setList] = useState<{ id: string}[]>([])
+  const [list, setList] = useState<{ id: string, fullname: string, username: string}[]>([])
   const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const navigate = useNavigate()
   const { fullname, id } = state
@@ -38,13 +38,13 @@ function Followers() {
       }
     }
     getList()
-  }, [list])
+  }, [id, idUser, list])
   return (
         <>
             <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
                 <nav className="bg-white border-gray-200 dark:bg-gray-900">
                     <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                        <a onClick={() => navigate('/home', { state: { id: idUser, fullname: fullname } })} className="flex items-center">
+                        <a onClick={() => navigate('/home', { state: { id: idUser, fullname } })} className="flex items-center">
                             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Twitter</span>
                         </a>
                         <div className="hidden w-full md:block md:w-auto" id="navbar-default">

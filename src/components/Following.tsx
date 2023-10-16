@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import appFirebase, { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { db } from '@config/firebase'
+import { getDoc, doc } from 'firebase/firestore'
 
 function Following () {
   const location = useLocation()
   const { state } = location
-  const [list, setList] = useState<{ id: string}[]>([])
+  const [list, setList] = useState<{ id: string, fullname: string, username: string}[]>([])
   const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const navigate = useNavigate()
   const { fullname, id } = state
@@ -48,7 +48,7 @@ function Following () {
       }
     }
     getList()
-  }, [list])
+  }, [id, idUser, list])
 
   return (
         <>

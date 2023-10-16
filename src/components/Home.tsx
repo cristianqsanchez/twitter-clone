@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import appFirebase, { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where, updateDoc, arrayUnion, arrayRemove, FieldValue } from 'firebase/firestore'
 
 function Home() {
   const navigate = useNavigate()
   const [list, setList] = useState([])
-  const [following, setFollowing] = useState(false)
-  const [followingUsers, setFollowingUsers] = useState([])
+  const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
   const location = useLocation()
@@ -28,11 +27,6 @@ function Home() {
           if (doc.id !== idUser) {
             docs.push({ ...doc.data(), id: doc.id })
           }
-          // if (idUser && idUser.following && idUser.following.includes(doc.id)) {
-          //   setFollowing(true)
-          // } else {
-          //   setFollowing(false)
-          // }
         })
         setList(docs)
       } catch (error) {
@@ -62,13 +56,20 @@ function Home() {
     getList()
   }, [id])
 
-  const followUser = async (userIdToFollow) => {
+  const followUser = async (userIdToFollow: string) => {
     const users = doc(db, 'users', id)
-    console.log(id)
-    console.log(userIdToFollow)
-    await updateDoc(users, {
-      following: arrayUnion(userIdToFollow)
-    })
+    const isFollowing = followingUsers.includes(userIdToFollow)
+    if (isFollowing) {
+    // If the user is already following, unfollow
+      await updateDoc(users, {
+        following: arrayRemove(userIdToFollow)
+      })
+    } else {
+    // If the user is not following, follow
+      await updateDoc(users, {
+        following: arrayUnion(userIdToFollow)
+      })
+    }
   }
 
   return (

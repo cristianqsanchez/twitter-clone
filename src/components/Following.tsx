@@ -20,8 +20,6 @@ function Following () {
         if (userDoc.exists()) {
           const userFollowingArray = userDoc.data().following
           const followingUserData = []
-          // que por cada elemento del arreglo se haga la consulta a la collection de users y se traigan sus datos
-
           for (const userId of userFollowingArray) {
             const followingUserDocRef = doc(db, 'users', userId)
             const followingUserDoc = getDoc(followingUserDocRef)
@@ -33,7 +31,7 @@ function Following () {
           }
           setList(followingUserData)
         } else {
-          console.log('Usuario no encontrado.')
+          console.log('User does not found.')
         }
       } catch (error) {
         console.log(error)

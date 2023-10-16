@@ -6,10 +6,39 @@ import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFiresto
 function Followers() {
   const location = useLocation()
   const { state } = location
-  const [list, setList] = useState([])
+  const [list, setList] = useState<{ id: string}[]>([])
+  const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const navigate = useNavigate()
   const { fullname, id } = state
   const idUser = id
+
+  useEffect(() => {
+    const getList = async () => {
+      try {
+        const usersRef = collection(db, 'users')
+        const q = query(usersRef, where('following', 'array-contains', idUser))
+        const querySnapshot = await getDocs(q)
+        const followers: { id: string; fullname?: string; username?: string }[] = []
+        querySnapshot.forEach((doc) => {
+          followers.push({ id: doc.id, ...doc.data() })
+        })
+        setList(followers)
+      } catch (error) {
+        console.log(error)
+      }
+      try {
+        const userDoc = doc(db, 'users', id)
+        const userSnapshot = await getDoc(userDoc)
+        const userData = userSnapshot.data()
+        if (userData && userData.following) {
+          setFollowingUsers(userData.following)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getList()
+  }, [list])
   return (
         <>
             <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
@@ -36,26 +65,26 @@ function Followers() {
                             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                                 <h1 className='dark:text-white'>Followers</h1>
                                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    {/* {list.map(list => ( */}
-                                    {/* <tbody key={list.id}> */}
+                                    {list.map(list => (
+                                    <tbody key={list.id}>
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {/* {list.fullname} */}
+                                            {list.fullname}
                                         </th>
                                         <td className="px-6 py-4">
-                                            {/* @{list.username} */}
+                                            @{list.username}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <a href="/home"
                                                 className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                                             // onClick={() => followUser(list.id)}
                                             >
-                                                {/* {following ? 'Unfollow' : 'Follow'} */}
+                                                  {followingUsers.includes(list.id) ? 'Unfollow' : 'Follow'}
                                             </a>
                                         </td>
                                     </tr>
-                                    {/* </tbody> */}
-                                    {/* ))} */}
+                                    </tbody>
+                                    ))}
                                 </table>
                             </div>
                         </div>

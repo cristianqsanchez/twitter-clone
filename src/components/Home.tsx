@@ -3,17 +3,23 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-function Home () {
+function Home() {
   const navigate = useNavigate()
-  const [list, setList] = useState<{ id: string, fullname: string, username: string}[]>([])
+  const [list, setList] = useState<{ id: string, fullname: string, username: string }[]>([])
   const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
   const location = useLocation()
   const { state } = location
-
   const { fullname, id } = state
   const idUser = id
+  // Pagination settings
+  const itemsPerPage = 3
+  const [currentPage, setCurrentPage] = useState(1)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  // Get users to display for the current page
+  const usersToDisplay = list.slice(startIndex, endIndex)
   // function for to show user list
 
   useEffect(() => {
@@ -57,19 +63,6 @@ function Home () {
   }, [id, idUser])
 
   const followUser = async (userIdToFollow: string) => {
-    const users = doc(db, 'users', id)
-    const isFollowing = followingUsers.includes(userIdToFollow)
-    if (isFollowing) {
-    // If the user is already following, unfollow
-      await updateDoc(users, {
-        following: arrayRemove(userIdToFollow)
-      })
-    } else {
-    // If the user is not following, follow
-      await updateDoc(users, {
-        following: arrayUnion(userIdToFollow)
-      })
-    }
   }
 
   return (
@@ -114,25 +107,42 @@ function Home () {
               <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <h1 className='dark:text-white'>Who to Follow</h1>
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                  {list.map(list => (
-                    <tbody key={list.id}>
+                  {usersToDisplay.map((user) => (
+                    <tbody key={user.id}>
                       <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          {list.fullname}
+                          {user.fullname}
                         </th>
                         <td className="px-6 py-4">
-                          @{list.username}
+                          @{user.username}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <a href="/home"
                             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                            onClick={() => followUser(list.id)}
-                          >{followingUsers.includes(list.id) ? 'Unfollow' : 'Follow'}</a>
+                            onClick={() => followUser(user.id)}
+                          >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>
                         </td>
                       </tr>
                     </tbody>
                   ))}
                 </table>
+              </div>
+              {/* Pagination controls */}
+              <div className="mt-4 flex justify-center">
+                <button
+                  className="px-4 py-2 bg-blue-700 text-white rounded-md"
+                  onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <button
+                  className="ml-2 px-4 py-2 bg-blue-700 text-white rounded-md"
+                  onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                  disabled={endIndex >= list.length}
+                >
+                  Next
+                </button>
               </div>
             </div>
           </div>

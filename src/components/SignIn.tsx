@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import appFirebase, { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, addDoc, onSnapshot, getFirestore, setDoc, where } from 'firebase/firestore'
+import { db } from '@config/firebase'
+import { collection, getDocs, query, addDoc, where } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
+import { FirebaseAuthContext } from 'src/context'
 
 interface IFormSignUp {
   fullname: string;
@@ -13,6 +14,7 @@ interface IFormSignUp {
 
 function SignIn () {
   //   const navigate = useNavigate()
+  const { setIsLogged, setSessionID } = useContext(FirebaseAuthContext)
   const [registering, setRegistering] = useState(false)
   const [text, setText] = useState('')
   const navigate = useNavigate()
@@ -54,7 +56,10 @@ function SignIn () {
         if (user.password === (data.password)) {
           // Successful login
           console.log('User logged in:', userSnapshot.docs[0].id)
-          navigate('/home', { state: { fullname: user.fullname, id: userSnapshot.docs[0].id }})
+
+          setSessionID(userSnapshot.docs[0].id)
+          setIsLogged(true)
+          navigate('/home', { state: { fullname: user.fullname, id: userSnapshot.docs[0].id } })
         } else {
           // Password doesn't match
           setText('Login failed. Invalid username or password.')
@@ -132,7 +137,7 @@ function SignIn () {
                       {
                         required: 'Username is required'
                       })}
-                    value={formData.username} 
+                    value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
 

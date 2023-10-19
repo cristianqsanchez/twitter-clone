@@ -6,9 +6,10 @@ import SignIn from './components/SignIn'
 import './index.css'
 import Followers from './components/Followers'
 import Following from './components/Following'
+import { FirebaseAuthProvider } from './context'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  <FirebaseAuthProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SignIn />} />
@@ -17,5 +18,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/following" element={<Following />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </FirebaseAuthProvider>
 )

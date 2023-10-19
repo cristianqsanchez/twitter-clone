@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, createContext, useState } from 'react'
+import React, { Dispatch, SetStateAction, createContext, useEffect, useState } from 'react'
 
 type AuthContext = {
   isLogged: boolean,
@@ -17,6 +17,10 @@ export const FirebaseAuthContext = createContext<AuthContext>({
 export function FirebaseAuthProvider ({ children }: { children: React.JSX.Element }) {
   const [isLogged, setIsLogged] = useState<boolean>(false)
   const [sessionID, setSessionID] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    localStorage.setItem('sessionID', JSON.stringify(sessionID))
+  }, [sessionID])
 
   return (
     <FirebaseAuthContext.Provider value={{ isLogged, sessionID, setIsLogged, setSessionID }}>

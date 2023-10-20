@@ -17,7 +17,7 @@ function Followers () {
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   // Get users to display for the current page
-  const usersToDisplay = list.slice(startIndex, endIndex)
+  const usersToDisplay = list.slice(startIndex, endIndex).sort((a, b) => a.fullname.localeCompare(b.fullname))
 
   const getList = async () => {
     try {

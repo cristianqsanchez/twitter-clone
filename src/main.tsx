@@ -1,22 +1,13 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Home from './components/Home'
-import SignIn from './components/SignIn'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
-import Followers from './components/Followers'
-import Following from './components/Following'
 import { FirebaseAuthProvider } from './context'
+import App from './App'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <FirebaseAuthProvider>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SignIn />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/followers" element={<Followers />} />
-        <Route path="/following" element={<Following />} />
-      </Routes>
+      <App />
     </BrowserRouter>
   </FirebaseAuthProvider>
 )

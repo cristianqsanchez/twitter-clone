@@ -1,26 +1,17 @@
-import { useState } from 'react'
-import appFirebase from '@config/firebase'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { Route, Routes } from 'react-router'
 import SignIn from './components/SignIn'
 import Home from './components/Home'
-
+import Followers from './components/Followers'
+import Following from './components/Following'
 
 function App () {
-
-
-  // const [user, setUser] = useState(null)
-  // onAuthStateChanged(auth, (userFirebase) => {
-  //   if (userFirebase) {
-  //     setUser(userFirebase)
-  //   } else {
-  //     setUser(null)
-  //   }
-  // })
-  // return (
-  //     <div>
-  //       { user ? <Home email = {user.email} /> : <SignIn/>}
-  //     </div>
-  // )
+  return (
+    <Routes>
+      <Route path="/" element={<SignIn />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/followers" element={<Followers />} />
+      <Route path="/following" element={<Following />} />
+    </Routes>
+  )
 }
-
 export default App

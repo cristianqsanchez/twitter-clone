@@ -61,25 +61,29 @@ function Home () {
 
   const followUser = async (userIdToFollow: string) => {
     console.log('Following user with ID:', userIdToFollow)
-    if (!followingUsers.includes(userIdToFollow)) {
-      // Si no está, agrégalo
-      const users = doc(db, 'users', id)
-      await updateDoc(users, {
-        following: arrayUnion(userIdToFollow)
-      })
-      console.log('User followed successfully.')
-    } else {
-      const users = doc(db, 'users', id)
-      await updateDoc(users, {
-        following: arrayRemove(userIdToFollow)
-      })
+    try {
+      if (!followingUsers.includes(userIdToFollow)) {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayUnion(userIdToFollow)
+        })
+        console.log('User followed successfully.')
+      } else {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayRemove(userIdToFollow)
+        })
+        console.log(userIdToFollow)
+      }
+      await getList()
+    } catch (error) {
+      console.error('Error following/unfollowing user:', error)
     }
-    await getList()
   }
 
   useEffect(() => {
     getList()
-  }, [id, idUser])
+  }, [getList, id, idUser])
   return (
     <>
       <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
@@ -132,7 +136,7 @@ function Home () {
                           @{user.username}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <a href="/home"
+                          <a
                             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                             onClick={() => followUser(user.id)}
                           >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>

@@ -10,6 +10,7 @@ interface IFormSignUp {
   username: string;
   email: string;
   password: string;
+  following: [];
 }
 
 function SignIn () {
@@ -22,7 +23,8 @@ function SignIn () {
     fullname: '',
     username: '',
     email: '',
-    password: ''
+    password: '',
+    following: []
   })
   const { register, formState: { errors }, handleSubmit } = useForm<IFormSignUp>()
   const onSubmit: SubmitHandler<IFormSignUp> = async data => {
@@ -30,7 +32,8 @@ function SignIn () {
       email: data.email,
       fullname: data.fullname,
       username: data.username,
-      password: data.password
+      password: data.password,
+      following: []
     }
     console.log(data)
     if (registering) {
@@ -41,7 +44,8 @@ function SignIn () {
         fullname: '',
         username: '',
         email: '',
-        password: ''
+        password: '',
+        following: []
       })
     } else {
       // Log In

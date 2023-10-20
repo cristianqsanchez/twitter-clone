@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { db } from '@config/firebase'
-import { getDoc, doc } from 'firebase/firestore'
+import { getDoc, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-function Following() {
+function Following () {
   const location = useLocation()
   const { state } = location
   const [list, setList] = useState<{ id: string, fullname: string, username: string }[]>([])
@@ -19,51 +19,73 @@ function Following() {
   // Get users to display for the current page
   const usersToDisplay = list.slice(startIndex, endIndex)
 
-  useEffect(() => {
-    const getList = async () => {
-      try {
-        const userDocRef = doc(db, 'users', idUser)
-        const userDoc = await getDoc(userDocRef)
+  const getList = async () => {
+    try {
+      const userDocRef = doc(db, 'users', idUser)
+      const userDoc = await getDoc(userDocRef)
 
-        if (userDoc.exists()) {
-          const userFollowingArray = userDoc.data().following
-          const followingUserData = []
-          for (const userId of userFollowingArray) {
-            const followingUserDocRef = doc(db, 'users', userId)
-            const followingUserDoc = getDoc(followingUserDocRef)
+      if (userDoc.exists()) {
+        const userFollowingArray = userDoc.data().following
+        const followingUserData = []
+        for (const userId of userFollowingArray) {
+          const followingUserDocRef = doc(db, 'users', userId)
+          const followingUserDoc = getDoc(followingUserDocRef)
 
-            if ((await followingUserDoc).exists()) {
-              const userData = (await followingUserDoc).data()
-              followingUserData.push({ id: userId, ...userData })
-            }
+          if ((await followingUserDoc).exists()) {
+            const userData = (await followingUserDoc).data()
+            followingUserData.push({ id: userId, ...userData })
           }
-          setList(followingUserData)
-        } else {
-          console.log('User does not found.')
         }
-      } catch (error) {
-        console.log(error)
+        setList(followingUserData)
+      } else {
+        console.log('User does not found.')
       }
-      try {
-        const userDoc = doc(db, 'users', id)
-        const userSnapshot = await getDoc(userDoc)
-        const userData = userSnapshot.data()
-        if (userData && userData.following) {
-          setFollowingUsers(userData.following)
-        }
-      } catch (error) {
-        console.log(error)
-      }
+    } catch (error) {
+      console.log(error)
     }
-    getList()
-  }, [id, idUser, list])
+    try {
+      const userDoc = doc(db, 'users', id)
+      const userSnapshot = await getDoc(userDoc)
+      const userData = userSnapshot.data()
+      if (userData && userData.following) {
+        setFollowingUsers(userData.following)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
+  const followUser = async (userIdToFollow: string) => {
+    console.log('Following user with ID:', userIdToFollow)
+    try {
+      if (!followingUsers.includes(userIdToFollow)) {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayUnion(userIdToFollow)
+        })
+        console.log('User followed successfully.')
+      } else {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayRemove(userIdToFollow)
+        })
+        console.log(userIdToFollow)
+      }
+      await getList()
+    } catch (error) {
+      console.error('Error following/unfollowing user:', error)
+    }
+  }
+
+  useEffect(() => {
+    getList()
+  }, [getList, id, idUser])
   return (
     <>
       <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a onClick={() => navigate('/home', { state: { id: idUser, fullname } })} className="flex items-center">
+            <a onClick={() => navigate('/home', { state: { id: idUser, fullname: fullname } })} className="flex items-center">
               <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Twitter</span>
             </a>
             <div className="hidden w-full md:block md:w-auto" id="navbar-default">
@@ -94,9 +116,9 @@ function Following() {
                           @{user.username}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <a href="/home"
+                          <a
                             className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                            // onClick={() => followUser(user.id)}
+                            onClick={() => followUser(user.id)}
                           >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>
                         </td>
                       </tr>

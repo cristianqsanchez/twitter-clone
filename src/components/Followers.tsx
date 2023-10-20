@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { db } from '@config/firebase'
-import { collection, getDoc, getDocs, query, doc, where } from 'firebase/firestore'
+import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-function Followers() {
+function Followers () {
   const location = useLocation()
   const { state } = location
   const [list, setList] = useState<{ id: string, fullname: string, username: string }[]>([])
@@ -19,33 +19,55 @@ function Followers() {
   // Get users to display for the current page
   const usersToDisplay = list.slice(startIndex, endIndex)
 
-  useEffect(() => {
-    const getList = async () => {
-      try {
-        const usersRef = collection(db, 'users')
-        const q = query(usersRef, where('following', 'array-contains', idUser))
-        const querySnapshot = await getDocs(q)
-        const followers: { id: string; fullname?: string; username?: string }[] = []
-        querySnapshot.forEach((doc) => {
-          followers.push({ id: doc.id, ...doc.data() })
-        })
-        setList(followers)
-      } catch (error) {
-        console.log(error)
-      }
-      try {
-        const userDoc = doc(db, 'users', id)
-        const userSnapshot = await getDoc(userDoc)
-        const userData = userSnapshot.data()
-        if (userData && userData.following) {
-          setFollowingUsers(userData.following)
-        }
-      } catch (error) {
-        console.log(error)
-      }
+  const getList = async () => {
+    try {
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('following', 'array-contains', idUser))
+      const querySnapshot = await getDocs(q)
+      const followers: { id: string; fullname?: string; username?: string }[] = []
+      querySnapshot.forEach((doc) => {
+        followers.push({ id: doc.id, ...doc.data() })
+      })
+      setList(followers)
+    } catch (error) {
+      console.log(error)
     }
+    try {
+      const userDoc = doc(db, 'users', id)
+      const userSnapshot = await getDoc(userDoc)
+      const userData = userSnapshot.data()
+      if (userData && userData.following) {
+        setFollowingUsers(userData.following)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const followUser = async (userIdToFollow: string) => {
+    console.log('Following user with ID:', userIdToFollow)
+    try {
+      if (!followingUsers.includes(userIdToFollow)) {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayUnion(userIdToFollow)
+        })
+        console.log('User followed successfully.')
+      } else {
+        const users = doc(db, 'users', id)
+        await updateDoc(users, {
+          following: arrayRemove(userIdToFollow)
+        })
+        console.log(userIdToFollow)
+      }
+      await getList()
+    } catch (error) {
+      console.error('Error following/unfollowing user:', error)
+    }
+  }
+
+  useEffect(() => {
     getList()
-  }, [id, idUser, list])
+  }, [getList, id, idUser])
   return (
         <>
             <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
@@ -82,9 +104,9 @@ function Followers() {
                                                     @{user.username}
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <a href="/home"
-                                                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                                    // onClick={() => followUser(user.id)}
+                                                    <a
+                                                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                                    onClick={() => followUser(user.id)}
                                                     >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>
                                                 </td>
                                             </tr>

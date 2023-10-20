@@ -61,10 +61,20 @@ function Home () {
 
   const followUser = async (userIdToFollow: string) => {
     console.log('Following user with ID:', userIdToFollow)
-    const users = doc(db, 'users', id)
-    await updateDoc(users, {
-      following: arrayUnion(userIdToFollow)
-    })
+    if (!followingUsers.includes(userIdToFollow)) {
+      // Si no está, agrégalo
+      const users = doc(db, 'users', id)
+      await updateDoc(users, {
+        following: arrayUnion(userIdToFollow)
+      })
+      console.log('User followed successfully.')
+    } else {
+      const users = doc(db, 'users', id)
+      await updateDoc(users, {
+        following: arrayRemove(userIdToFollow)
+      })
+    }
+    await getList()
   }
 
   useEffect(() => {

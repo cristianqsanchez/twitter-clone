@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
@@ -98,7 +98,7 @@ function Followers () {
                                         <tbody key={user.id}>
                                             <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                    {user.fullname}
+                                                <Link className='font-bold' to={`/user/${user.username}`}>{user.fullname} </Link>
                                                 </th>
                                                 <td className="px-6 py-4">
                                                     @{user.username}

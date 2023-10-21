@@ -76,7 +76,7 @@ export default function Tweets () {
   return (
     <>
       <form className="flex-col" onSubmit={handleSubmit}>
-        <textarea className="text-gray-950" name="content" />
+        <textarea className="text-gray-950" name="content" minLength={1} maxLength={280} />
         <div>
           <button className="bg-blue-500 py-2 px-4 rounded-lg text-white font-bold">Tweet</button>
         </div>

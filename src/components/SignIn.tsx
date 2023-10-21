@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { db } from '@config/firebase'
 import { collection, getDocs, query, addDoc, where } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
-import { FirebaseAuthContext } from 'src/context'
+import useSessionID from '@hooks/use-auth'
 
 interface IFormSignUp {
   fullname: string;
@@ -11,11 +11,11 @@ interface IFormSignUp {
   email: string;
   password: string;
   following: [];
+  tweets: []
 }
 
 function SignIn () {
-  //   const navigate = useNavigate()
-  const { setIsLogged, setSessionID } = useContext(FirebaseAuthContext)
+  const { setsessionID } = useSessionID()
   const [registering, setRegistering] = useState(false)
   const [text, setText] = useState('')
   const navigate = useNavigate()
@@ -24,7 +24,8 @@ function SignIn () {
     username: '',
     email: '',
     password: '',
-    following: []
+    following: [],
+    tweets: []
   })
   const { register, formState: { errors }, handleSubmit } = useForm<IFormSignUp>()
   const onSubmit: SubmitHandler<IFormSignUp> = async data => {
@@ -33,7 +34,8 @@ function SignIn () {
       fullname: data.fullname,
       username: data.username,
       password: data.password,
-      following: []
+      following: [],
+      tweets: []
     }
     console.log(data)
     if (registering) {
@@ -45,7 +47,8 @@ function SignIn () {
         username: '',
         email: '',
         password: '',
-        following: []
+        following: [],
+        tweets: []
       })
     } else {
       // Log In
@@ -61,8 +64,7 @@ function SignIn () {
           // Successful login
           console.log('User logged in:', userSnapshot.docs[0].id)
 
-          setSessionID(userSnapshot.docs[0].id)
-          setIsLogged(true)
+          setsessionID({ sessionID: userSnapshot.docs[0].id })
           navigate('/home', { state: { fullname: user.fullname, id: userSnapshot.docs[0].id } })
         } else {
           // Password doesn't match

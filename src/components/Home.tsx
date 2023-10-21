@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import useSessionID from '@hooks/use-auth'
+import Tweets from './tweets/tweets'
 
 function Home () {
   const navigate = useNavigate()
@@ -103,7 +104,7 @@ function Home () {
             </div>
           </div>
         </nav>
-
+        <Tweets />
         <div className="flex flex-col items-right justify-left px-6 py-8">
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-4 space-y-4 md:space-y-6 sm:p-8">
@@ -163,7 +164,7 @@ function Home () {
               </div>
             </div>
           </div>
-        </div>
+        T</div>
       </div>
     </>
   )

@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { db } from '@config/firebase'
 import { collection, getDoc, getDocs, query, doc, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import useSessionID from '@hooks/use-auth'
 
 function Home () {
   const navigate = useNavigate()
+  const { sessionID } = useSessionID()
   const [list, setList] = useState<{ id: string, fullname: string, username: string }[]>([])
   const [followingUsers, setFollowingUsers] = useState<string[]>([])
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
-  const location = useLocation()
-  const { state } = location
-  const { fullname, id } = state
-  const idUser = id
+  const idUser = sessionID as string
   // Pagination settings
   const itemsPerPage = 3
   const [currentPage, setCurrentPage] = useState(1)
@@ -38,7 +37,7 @@ function Home () {
       console.log(error)
     }
     try {
-      const userDoc = doc(db, 'users', id)
+      const userDoc = doc(db, 'users', idUser)
       const userSnapshot = await getDoc(userDoc)
       const userData = userSnapshot.data()
       if (userData && userData.following) {
@@ -51,25 +50,25 @@ function Home () {
 
     try {
       const usersRef = collection(db, 'users')
-      const q = query(usersRef, where('following', 'array-contains', id))
+      const q = query(usersRef, where('following', 'array-contains', idUser))
       const querySnapshot = await getDocs(q)
       setFollowersCount(querySnapshot.size)
     } catch (error) {
       console.log(error)
     }
-  }, [id, idUser])
+  }, [idUser])
 
   const followUser = async (userIdToFollow: string) => {
     console.log('Following user with ID:', userIdToFollow)
     try {
       if (!followingUsers.includes(userIdToFollow)) {
-        const users = doc(db, 'users', id)
+        const users = doc(db, 'users', idUser)
         await updateDoc(users, {
           following: arrayUnion(userIdToFollow)
         })
         console.log('User followed successfully.')
       } else {
-        const users = doc(db, 'users', id)
+        const users = doc(db, 'users', idUser)
         await updateDoc(users, {
           following: arrayRemove(userIdToFollow)
         })
@@ -83,7 +82,7 @@ function Home () {
 
   useEffect(() => {
     getList()
-  }, [getList, id, idUser])
+  }, [getList, idUser])
   return (
     <>
       <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen">
@@ -106,19 +105,18 @@ function Home () {
         </nav>
 
         <div className="flex flex-col items-right justify-left px-6 py-8">
-          <h1 className='dark:text-white flex flex-col  items-center' >Welcome {fullname}</h1>
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-4 space-y-4 md:space-y-6 sm:p-8">
               <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <p className='text-slate-50'>Followers</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/followers', { state: { id: idUser, fullname } })}
+                  onClick={() => navigate('/followers', { state: { id: idUser } })}
                 >{followersCount}</a>
                 <p className='text-slate-50'>Following</p>
                 <a
                   className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-                  onClick={() => navigate('/following', { state: { id: idUser, fullname } })}
+                  onClick={() => navigate('/following', { state: { id: idUser } })}
                 >{followingCount}</a>
               </div>
             </div>

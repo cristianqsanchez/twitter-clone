@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { db } from '@config/firebase'
 import { getDoc, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
@@ -19,7 +19,7 @@ function Following () {
   // Get users to display for the current page
   const usersToDisplay = list.slice(startIndex, endIndex).sort((a, b) => a.fullname.localeCompare(b.fullname))
 
-  const getList = async () => {
+  const getList = useCallback(async () => {
     try {
       const userDocRef = doc(db, 'users', idUser)
       const userDoc = await getDoc(userDocRef)
@@ -53,7 +53,7 @@ function Following () {
     } catch (error) {
       console.log(error)
     }
-  }
+  }, [id, idUser])
 
   const followUser = async (userIdToFollow: string) => {
     console.log('Following user with ID:', userIdToFollow)

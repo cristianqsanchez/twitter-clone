@@ -92,64 +92,68 @@ function Home() {
           <Navbar />
         </div>
         <div className="p-4 space-y-4 md:space-y-3 sm:p-8 col-start-1 col-end-1">
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <p className='text-slate-50'>Followers</p>
-            <a
-              className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-              onClick={() => navigate('/followers', { state: { id: idUser } })}
-            >{followersCount}</a>
-            <p className='text-slate-50'>Following</p>
-            <a
-              className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
-              onClick={() => navigate('/following', { state: { id: idUser } })}
-            >{followingCount}</a>
+          <div className=" flex flex-row gap-4">
+            <div>
+              <p className='text-slate-50'>Followers</p>
+              <a
+                className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
+                onClick={() => navigate('/followers', { state: { id: idUser } })}
+              >{followersCount}</a>
+            </div>
+            <div>
+              <p className='text-slate-50'>Following</p>
+              <a
+                className='className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" '
+                onClick={() => navigate('/following', { state: { id: idUser } })}
+              >{followingCount}</a>
+            </div>
           </div>
         </div>
         <div className='col-start-2 col-end-2'>
           <Tweets />
         </div>
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8 col-start-3 col-end-3">
-              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <h1 className='dark:text-white'>Who to Follow</h1>
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                  {usersToDisplay.map((user) => (
-                    <tbody key={user.id}>
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          {user.fullname}
-                        </th>
-                        <td className="px-6 py-4">
-                          @{user.username}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <a
-                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                            onClick={() => followUser(user.id)}
-                          >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  ))}
-                </table>
-              </div>
-              {/* Pagination controls */}
-              <div className="mt-4 flex justify-center">
-                <button
-                  className="px-4 py-2 bg-blue-700 text-white rounded-md"
-                  onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <button
-                  className="ml-2 px-4 py-2 bg-blue-700 text-white rounded-md"
-                  onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                  disabled={endIndex >= list.length}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+        <div className="p-6 space-y-2 md:space-y-3 sm:p-1 col-start-3 col-end-3">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <h1 className='dark:text-white'>Who to Follow</h1>
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              {usersToDisplay.map((user) => (
+                <tbody key={user.id}>
+                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      {user.fullname}
+                    </th>
+                    <td className="px-6 py-4">
+                      @{user.username}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <a
+                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                        onClick={() => followUser(user.id)}
+                      >{followingUsers.includes(user.id) ? 'Unfollow' : 'Follow'}</a>
+                    </td>
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+          </div>
+          {/* Pagination controls */}
+          <div className="mt-4 flex justify-center">
+            <button
+              className="px-4 py-2 bg-blue-700 text-white rounded-md"
+              onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="ml-2 px-4 py-2 bg-blue-700 text-white rounded-md"
+              onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+              disabled={endIndex >= list.length}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </>
   )

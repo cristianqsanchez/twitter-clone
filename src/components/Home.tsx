@@ -91,7 +91,7 @@ function Home() {
         <div className='col-start-1 col-end-7'>
           <Navbar />
         </div>
-        <div className="p-4 space-y-4 md:space-y-3 sm:p-8 col-start-1 col-end-1">
+        <div className="p-4 space-y-4 md:space-y-3 sm:p-8 col-start-1 col-end-2  w-2/6">
           <div className=" flex flex-row gap-4">
             <div>
               <p className='text-slate-50'>Followers</p>
@@ -137,7 +137,7 @@ function Home() {
             </table>
           </div>
           {/* Pagination controls */}
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 flex justify-end">
             <button
               className="px-4 py-2 bg-blue-700 text-white rounded-md"
               onClick={() => setCurrentPage((prevPage) => prevPage - 1)}

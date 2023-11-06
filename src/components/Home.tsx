@@ -88,7 +88,7 @@ function Home() {
   return (
     <>
       <div className="bg-gray-50 dark:bg-gray-900 mx-auto md:h-screen grid grid-cols-3 gap-4">
-        <div className='col-start-1 col-end-7'>
+        <div className='col-start-1 col-end-7 h-0'>
           <Navbar />
         </div>
         <div className="p-4 space-y-4 md:space-y-3 sm:p-8 col-start-1 col-end-2  w-2/6">
